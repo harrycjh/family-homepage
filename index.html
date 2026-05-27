@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臭胖子、大头鬼和小兔狗子的家</title>
+<style>
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #FFF8E7;
+}
+
+/* ============================================================
+   Scene Containers
+   ============================================================ */
+.scene-wrap {
+  position: relative;
+  transform-origin: center center;
+}
+.scene {
+  position: absolute;
+  top: 0; left: 0;
+  display: none;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.scene.active { display: block; }
+.scene-landscape {
+  width: 1672px; height: 941px;
+  background-image: url('landscape.png');
+}
+.scene-portrait {
+  width: 941px; height: 1672px;
+  background-image: url('portrait.png');
+}
+
+/* ============================================================
+   Enter Button
+   ============================================================ */
+.enter-btn {
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.15s ease;
+}
+.enter-btn:hover { transform: scale(1.06); }
+.enter-btn:active { transform: scale(0.94); }
+
+.enter-btn-hit {
+  position: absolute;
+  border-radius: 22px;
+  /* 透明但可点击 */
+  background: transparent;
+}
+
+/* ============================================================
+   Button positions - from user's coordinate data
+   ============================================================ */
+/* Landscape: visualBox(635,407,395×201) clickBox(675,430,325×158) */
+.scene-landscape .enter-btn {
+  left: 675px; top: 430px;
+  width: 325px; height: 158px;
+}
+
+/* Portrait: visualBox(251,593,456×215) clickBox(284,602,390×196) */
+.scene-portrait .enter-btn {
+  left: 284px; top: 602px;
+  width: 390px; height: 196px;
+}
+
+/* ============================================================
+   Pop-in animation
+   ============================================================ */
+@keyframes pop-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.scene.active { animation: pop-in 0.3s ease-out; }
+</style>
+</head>
+<body>
+
+<div class="scene-wrap" id="sceneWrap">
+
+  <!-- Landscape Scene -->
+  <div class="scene scene-landscape active" id="sceneLand">
+    <div class="enter-btn" id="enterBtnLand" title="进入"></div>
+  </div>
+
+  <!-- Portrait Scene -->
+  <div class="scene scene-portrait" id="scenePort">
+    <div class="enter-btn" id="enterBtnPort" title="进入"></div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const sceneWrap = document.getElementById('sceneWrap');
+  const sceneLand = document.getElementById('sceneLand');
+  const scenePort = document.getElementById('scenePort');
+
+  function isLandscape() {
+    return window.innerWidth > window.innerHeight;
+  }
+
+  function updateScene() {
+    if (isLandscape()) {
+      sceneLand.classList.add('active');
+      scenePort.classList.remove('active');
+      const sw = window.innerWidth / 1672;
+      const sh = window.innerHeight / 941;
+      const s = Math.min(sw, sh);
+      const ox = (window.innerWidth - 1672 * s) / 2;
+      const oy = (window.innerHeight - 941 * s) / 2;
+      sceneWrap.style.width = '1672px';
+      sceneWrap.style.height = '941px';
+      sceneWrap.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+    } else {
+      scenePort.classList.add('active');
+      sceneLand.classList.remove('active');
+      const sw = window.innerWidth / 941;
+      const sh = window.innerHeight / 1672;
+      const s = Math.min(sw, sh);
+      const ox = (window.innerWidth - 941 * s) / 2;
+      const oy = (window.innerHeight - 1672 * s) / 2;
+      sceneWrap.style.width = '941px';
+      sceneWrap.style.height = '1672px';
+      sceneWrap.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+    }
+  }
+
+  // Enter button click effect
+  function addClickEffect(btn) {
+    btn.addEventListener('click', function() {
+      this.style.transform = 'scale(0.93)';
+      setTimeout(() => { this.style.transform = 'scale(1.06)'; }, 120);
+      setTimeout(() => { this.style.transform = ''; }, 280);
+    });
+  }
+  addClickEffect(document.getElementById('enterBtnLand'));
+  addClickEffect(document.getElementById('enterBtnPort'));
+
+  window.addEventListener('resize', updateScene);
+  window.addEventListener('orientationchange', () => setTimeout(updateScene, 100));
+  updateScene();
+})();
+</script>
+
+</body>
+</html>
