@@ -16,13 +16,15 @@ html, body {
 }
 
 /* ============================================================
-   Scene Containers
+   Scene Containers (Main Page)
    ============================================================ */
 .scene-wrap {
   position: fixed;
   top: 0; left: 0;
   transform-origin: 0 0;
+  transition: opacity 0.3s ease;
 }
+.scene-wrap.hidden { opacity: 0; pointer-events: none; }
 .scene {
   position: absolute;
   top: 0; left: 0;
@@ -53,31 +55,144 @@ html, body {
 .enter-btn:hover { transform: scale(1.06); }
 .enter-btn:active { transform: scale(0.94); }
 
-.enter-btn-hit {
+.scene-landscape .enter-btn { left: 675px; top: 430px; width: 325px; height: 158px; }
+.scene-portrait .enter-btn  { left: 284px; top: 602px; width: 390px; height: 196px; }
+
+/* ============================================================
+   Projects Page
+   ============================================================ */
+.projects-page {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 30% 20%, #FFF8E0 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, #F5ECD7 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #FAD07A22 0%, transparent 40%),
+    #FFF8E7;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 40px 20px;
+  z-index: 100;
+  transition: opacity 0.35s ease;
+}
+.projects-page.show { display: flex; }
+.projects-page.fade-in { animation: fadeIn 0.35s ease-out; }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.projects-title {
+  font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 900;
+  color: #5D4037;
+  -webkit-text-stroke: 3px white;
+  paint-order: stroke fill;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.projects-subtitle {
+  font-size: clamp(14px, 2vw, 18px);
+  color: #A07850;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* ============================================================
+   Project Cards Grid
+   ============================================================ */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 24px 28px;
+  background: #FFFDF5;
+  border: 8px solid white;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+.project-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+}
+.project-card:active { transform: translateY(-2px) scale(0.98); }
+
+/* Stitch border */
+.project-card::after {
+  content: '';
   position: absolute;
-  border-radius: 22px;
-  /* 透明但可点击 */
-  background: transparent;
+  inset: -5px;
+  border: 2px dashed rgba(196,149,106,0.2);
+  border-radius: 28px;
+  pointer-events: none;
 }
 
-/* ============================================================
-   Button positions - from user's coordinate data
-   ============================================================ */
-/* Landscape: visualBox(635,407,395×201) clickBox(675,430,325×158) */
-.scene-landscape .enter-btn {
-  left: 675px; top: 430px;
-  width: 325px; height: 158px;
+.card-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+.card-name {
+  font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #5D4037;
+  text-align: center;
+}
+.card-desc {
+  font-size: 13px;
+  color: #A07850;
+  text-align: center;
+  line-height: 1.5;
 }
 
-/* Portrait: visualBox(251,593,456×215) clickBox(284,602,390×196) */
-.scene-portrait .enter-btn {
-  left: 284px; top: 602px;
-  width: 390px; height: 196px;
+/* Back button */
+.back-btn {
+  position: fixed;
+  top: 20px; left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #FFFDF5;
+  border: 6px solid white;
+  border-radius: 50px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 16px;
+  color: #5D4037;
+  font-weight: 700;
+  z-index: 200;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.back-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.back-btn:active { transform: scale(0.96); }
+.back-arrow { font-size: 20px; }
 
-/* ============================================================
-   Pop-in animation
-   ============================================================ */
+/* Animation */
 @keyframes pop-in {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -87,18 +202,58 @@ html, body {
 </head>
 <body>
 
+<!-- ================================================================
+     Main Page (Design Images as Background)
+     ================================================================ -->
 <div class="scene-wrap" id="sceneWrap">
-
-  <!-- Landscape Scene -->
   <div class="scene scene-landscape active" id="sceneLand">
     <div class="enter-btn" id="enterBtnLand" title="进入"></div>
   </div>
-
-  <!-- Portrait Scene -->
   <div class="scene scene-portrait" id="scenePort">
     <div class="enter-btn" id="enterBtnPort" title="进入"></div>
   </div>
+</div>
 
+<!-- ================================================================
+     Projects List Page
+     ================================================================ -->
+<div class="projects-page" id="projectsPage">
+  <div class="back-btn" id="backBtn">
+    <span class="back-arrow">&#9664;</span> 回家
+  </div>
+
+  <h1 class="projects-title">我们的小天地</h1>
+  <p class="projects-subtitle">选一个喜欢的，一起玩吧～</p>
+
+  <div class="cards-grid">
+    <!-- 黑白棋 -->
+    <a class="project-card" href="https://harrycjh.github.io/reversi/" target="_blank">
+      <span class="card-icon">&#9898;&#9899;</span>
+      <span class="card-name">黑白棋</span>
+      <span class="card-desc">翻转吧小棋子</span>
+    </a>
+
+    <!-- 2048 -->
+    <a class="project-card" href="https://harrycjh.github.io/2048/" target="_blank">
+      <span class="card-icon">2048</span>
+      <span class="card-name">2048</span>
+      <span class="card-desc">滑动合并凑大数</span>
+    </a>
+
+    <!-- 魔力宝贝 -->
+    <a class="project-card" href="https://harrycjh.github.io/magic/" target="_blank">
+      <span class="card-icon">&#129498;</span>
+      <span class="card-name">魔力宝贝</span>
+      <span class="card-desc">魔法世界冒险</span>
+    </a>
+
+    <!-- 英语学习 -->
+    <a class="project-card" href="https://harrycjh.github.io/english/" target="_blank">
+      <span class="card-icon">&#128218;</span>
+      <span class="card-name">英语学习</span>
+      <span class="card-desc">和小兔一起学英语</span>
+    </a>
+  </div>
 </div>
 
 <script>
@@ -106,12 +261,13 @@ html, body {
   const sceneWrap = document.getElementById('sceneWrap');
   const sceneLand = document.getElementById('sceneLand');
   const scenePort = document.getElementById('scenePort');
+  const projectsPage = document.getElementById('projectsPage');
 
   function isLandscape() {
     return window.innerWidth > window.innerHeight;
   }
 
-  function updateScene() {
+  function updateMainScene() {
     if (isLandscape()) {
       sceneLand.classList.add('active');
       scenePort.classList.remove('active');
@@ -137,20 +293,36 @@ html, body {
     }
   }
 
-  // Enter button click effect
-  function addClickEffect(btn) {
-    btn.addEventListener('click', function() {
-      this.style.transform = 'scale(0.93)';
-      setTimeout(() => { this.style.transform = 'scale(1.06)'; }, 120);
-      setTimeout(() => { this.style.transform = ''; }, 280);
-    });
+  function showProjects() {
+    sceneWrap.classList.add('hidden');
+    projectsPage.classList.add('show', 'fade-in');
   }
-  addClickEffect(document.getElementById('enterBtnLand'));
-  addClickEffect(document.getElementById('enterBtnPort'));
 
-  window.addEventListener('resize', updateScene);
-  window.addEventListener('orientationchange', () => setTimeout(updateScene, 100));
-  updateScene();
+  function showMain() {
+    sceneWrap.classList.remove('hidden');
+    projectsPage.classList.remove('show', 'fade-in');
+    updateMainScene();
+  }
+
+  // Enter button click → show projects
+  document.getElementById('enterBtnLand').addEventListener('click', showProjects);
+  document.getElementById('enterBtnPort').addEventListener('click', showProjects);
+
+  // Back button → return to main
+  document.getElementById('backBtn').addEventListener('click', showMain);
+
+  window.addEventListener('resize', function() {
+    if (!projectsPage.classList.contains('show')) {
+      updateMainScene();
+    }
+  });
+  window.addEventListener('orientationchange', function() {
+    if (!projectsPage.classList.contains('show')) {
+      setTimeout(updateMainScene, 100);
+    }
+  });
+
+  updateMainScene();
 })();
 </script>
 
