@@ -102,9 +102,49 @@ html, body {
 .projects-subtitle {
   font-size: clamp(14px, 2vw, 18px);
   color: #A07850;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   text-align: center;
 }
+
+/* Player picker */
+.player-pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.player-label {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8D6E63;
+  margin-right: 4px;
+}
+.player-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #FFFDF5;
+  border: 4px solid white;
+  border-radius: 20px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5D4037;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.2s ease;
+}
+.player-btn:hover { transform: scale(1.05); }
+.player-btn.active {
+  background: #FFE082;
+  border-color: #FFB74D;
+  box-shadow: 0 4px 14px rgba(255,179,71,0.25);
+}
+.player-btn .pfp { font-size: 22px; }
 
 /* ============================================================
    Project Cards Grid
@@ -415,6 +455,14 @@ html, body {
   <h1 class="projects-title">我们的小天地</h1>
   <p class="projects-subtitle">选一个喜欢的，一起玩吧～</p>
 
+  <!-- Player picker -->
+  <div class="player-pick" id="playerPick">
+    <span class="player-label">你是谁呀？</span>
+    <button class="player-btn" data-name="臭胖子"><span class="pfp">&#128083;</span>臭胖子</button>
+    <button class="player-btn" data-name="小兔狗子"><span class="pfp">&#128048;</span>小兔狗子</button>
+    <button class="player-btn" data-name="大头鬼"><span class="pfp">&#128127;</span>大头鬼</button>
+  </div>
+
   <div class="cards-grid">
     <!-- 黑白棋 -->
     <a class="project-card" href="https://reversi.cw2017.com" target="_blank">
@@ -717,6 +765,50 @@ html, body {
     hidePasswordOverlay();
     resetInput();
   });
+
+  // ---- Player Picker ----
+  var selectedName = localStorage.getItem('playerName2048') || '';
+  var playerBtns = document.querySelectorAll('.player-btn');
+  var projectCards = document.querySelectorAll('.project-card');
+
+  function applyPlayerName(name) {
+    selectedName = name;
+    localStorage.setItem('playerName2048', name);
+    // Update all card links
+    for (var i = 0; i < projectCards.length; i++) {
+      var card = projectCards[i];
+      var baseHref = card.getAttribute('data-href') || card.getAttribute('href');
+      if (!card.getAttribute('data-href')) {
+        card.setAttribute('data-href', baseHref);
+      }
+      if (name) {
+        card.href = baseHref + (baseHref.indexOf('?') > -1 ? '&' : '?') + 'name=' + encodeURIComponent(name);
+      } else {
+        card.href = baseHref;
+      }
+    }
+    // Highlight active button
+    for (var j = 0; j < playerBtns.length; j++) {
+      var btn = playerBtns[j];
+      if (btn.dataset.name === name) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+  }
+
+  // Bind button clicks
+  document.getElementById('playerPick').addEventListener('click', function(e) {
+    var btn = e.target.closest('.player-btn');
+    if (!btn) return;
+    applyPlayerName(btn.dataset.name);
+  });
+
+  // Restore saved selection
+  if (selectedName) {
+    applyPlayerName(selectedName);
+  }
 
   // Back button → return to main
   document.getElementById('backBtn').addEventListener('click', showMain);
